@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".fragment.RecordFragment">
+
+
+    <TextView
+        android:id="@+id/tv_recoding_timer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="100dp"
+        android:text="00:00.00"
+        android:textSize="40sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.visualizer.amplitude.AudioRecordView
+        android:id="@+id/audioRecordView"
+        android:layout_width="0dp"
+        android:layout_height="100dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="64dp"
+        android:layout_marginEnd="8dp"
+        app:chunkAlignTo="center"
+        app:chunkColor="#2196F3"
+        app:chunkMaxHeight="100dp"
+        app:chunkMinHeight="2dp"
+        app:chunkRoundedCorners="true"
+        app:chunkSoftTransition="true"
+        app:chunkSpace="1dp"
+        app:chunkWidth="2dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_recoding_timer" />
+
+    <ImageView
+        android:id="@+id/btn_record"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginBottom="160dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@drawable/record"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageView
+        android:id="@+id/btn_pause"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="24dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:baselineAlignBottom="true"
+        android:src="@drawable/ic_pause"
+        app:layout_constraintBottom_toBottomOf="@+id/btn_record"
+        app:layout_constraintStart_toEndOf="@+id/btn_record" />
+
+    <com.google.android.gms.ads.AdView
+        android:id="@+id/adView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        app:adSize="BANNER"
+        app:adUnitId="ca-app-pub-3940256099942544/6300978111"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btn_record" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

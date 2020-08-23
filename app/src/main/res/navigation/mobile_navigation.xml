@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/navigation_record">
+
+    <fragment
+        android:id="@+id/navigation_record"
+        android:name="com.bamgasi.voicerecorder.fragment.RecordFragment"
+        android:label="@string/title_record"
+        tools:layout="@layout/fragment_record" />
+
+    <fragment
+        android:id="@+id/navigation_list"
+        android:name="com.bamgasi.voicerecorder.fragment.ListFragment"
+        android:label="@string/title_record_list"
+        tools:layout="@layout/fragment_list" />
+
+    <fragment
+        android:id="@+id/navigation_settings"
+        android:name="com.bamgasi.voicerecorder.fragment.SettingsFragment"
+        android:label="@string/title_settings" />
+</navigation>

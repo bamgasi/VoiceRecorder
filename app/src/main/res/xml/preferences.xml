@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory
+        android:title="@string/pref_title_config"
+        app:iconSpaceReserved="false">
+        <ListPreference
+            android:key="key_record_qu"
+            android:title="@string/pref_record_quality_title"
+            android:summary=""
+            android:entries="@array/record_qu_entries"
+            android:entryValues="@array/record_qu_values"
+            android:dialogTitle="@string/pref_record_quality_diglog_title"
+            android:defaultValue="NORMAL"
+            app:iconSpaceReserved="false" />
+
+        <ListPreference
+            android:key="key_save_location"
+            android:title="@string/pref_save_location_title"
+            android:summary=""
+            android:entries="@array/save_location_entries"
+            android:entryValues="@array/save_location_values"
+            android:dialogTitle="@string/pref_save_location_diglog_title"
+            android:defaultValue="INTERNAL"
+            app:iconSpaceReserved="false" />
+    </PreferenceCategory>
+
+    <PreferenceScreen
+        android:title="@string/pref_app_version_title"
+        android:key="key_app_version"
+        android:summary="AppVersion"
+        app:iconSpaceReserved="false">
+    </PreferenceScreen>
+
+</PreferenceScreen>

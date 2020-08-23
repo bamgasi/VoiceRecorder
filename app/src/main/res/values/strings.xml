@@ -1,0 +1,40 @@
+<resources>
+    <string name="app_name">Koko Recorder</string>
+    <string name="title_record">Recording</string>
+    <string name="title_record_list">Record List</string>
+    <string name="title_settings">Settings</string>
+
+    <string name="msg_rationale">Permissions are required to use the app\'s features.</string>
+    <string name="msg_deny">" You can allow permissions in [Settings]> [Permissions]."</string>
+    <string name="msg_loading">Loading Data…</string>
+    <string name="title_file_name">Filename</string>
+
+    <string name="title_file_save">File Save</string>
+    <string name="title_file_delete">File Delete</string>
+    <string name="message_file_delete">Are you sure you want to delete the file?</string>
+    <string name="title_btn_save">Save</string>
+    <string name="title_btn_delete">Delete</string>
+    <string name="title_btn_cancel">Cancel</string>
+    <string name="message_delete_file_fail">File deletion failed</string>
+
+    <string name="title_file_rename">Rename</string>
+    <string name="msg_finish_alert">Press the back button again to finish.</string>
+    <string name="msg_save_complete">The recorded file has been saved.</string>
+    <string name="msg_not_save_state">"It is not currently recording. "</string>
+    <string name="msg_record_stop">Recording has been stopped.</string>
+
+    <string name="pref_title_config">Recording settings</string>
+    <string name="pref_record_quality_title">Recording quality</string>
+    <string name="pref_record_quality_diglog_title">Selecting recording quality</string>
+    <string name="pref_save_location_title">Save Location</string>
+    <string name="pref_save_location_diglog_title">Selecting Save Location</string>
+
+    <string name="pref_save_location_internal">Internal Storage</string>
+    <string name="pref_save_location_sdcard">SD Card</string>
+
+    <string name="pref_record_quality_high">High Quality: 256kbps, 48kHz</string>
+    <string name="pref_record_quality_normal">Normal Quality: 128kbps, 44kHz</string>
+    <string name="pref_record_quality_low">Low Quality: 64kbps, 22kHz</string>
+
+    <string name="pref_app_version_title">AppVersion</string>
+</resources>

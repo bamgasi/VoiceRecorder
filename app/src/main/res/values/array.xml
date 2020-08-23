@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="record_qu_values">
+        <item>HIGH</item>
+        <item>NORMAL</item>
+        <item>LOW</item>
+    </string-array>
+
+    <string-array name="record_qu_entries">
+        <item>@string/pref_record_quality_high</item>
+        <item>@string/pref_record_quality_normal</item>
+        <item>@string/pref_record_quality_low</item>
+    </string-array>
+
+    <string-array name="save_location_values">
+        <item>INTERNAL</item>
+    </string-array>
+
+    <string-array name="save_location_entries">
+        <item>@string/pref_save_location_internal</item>
+    </string-array>
+</resources>
