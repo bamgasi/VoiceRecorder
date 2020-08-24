@@ -37,4 +37,8 @@
     <string name="pref_record_quality_low">Low Quality: 64kbps, 22kHz</string>
 
     <string name="pref_app_version_title">AppVersion</string>
+    <string name="pref_review_title">Write Review</string>
+    <string name="pref_review_msg">Reviews and ratings are a lot of power for developers.</string>
+    <string name="pref_send_email_title">Contact</string>
+    <string name="pref_send_email_msg">Please send me fixes and improvements</string>
 </resources>

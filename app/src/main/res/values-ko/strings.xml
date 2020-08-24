@@ -31,4 +31,8 @@
     <string name="pref_record_quality_normal">일반음질: 128kbps, 44kHz</string>
     <string name="pref_record_quality_low">저음질: 64kbps, 22kHz</string>
     <string name="pref_app_version_title">앱 버전</string>
+    <string name="pref_review_title">앱 리뷰(별점주기)</string>
+    <string name="pref_review_msg">리뷰와 별점은 개발자에게 많은 힘이됩니다.</string>
+    <string name="pref_send_email_title">문의 및 건의하기</string>
+    <string name="pref_send_email_msg">수정 개선사항을 보내주세요</string>
 </resources>

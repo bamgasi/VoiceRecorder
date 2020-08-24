@@ -76,6 +76,8 @@ class RecordAdapter(private val list: ArrayList<Records>,
             val contentUri = record.recordUri
             */
 
+            fragment.stopPlayer()
+
             val shareIntent = Intent(Intent.ACTION_SEND)
             shareIntent.type = "audio/*"
             shareIntent.putExtra(Intent.EXTRA_STREAM, record.recordUri)
@@ -84,6 +86,8 @@ class RecordAdapter(private val list: ArrayList<Records>,
 
         holder.binding.btnDelete.setOnClickListener {
             //Log.e("MemoAdapter", "삭제버튼 눌림: ${list[position]}")
+
+            fragment.stopPlayer()
 
             val builder = AlertDialog.Builder(context)
             builder.setTitle(R.string.title_file_delete)
@@ -95,6 +99,7 @@ class RecordAdapter(private val list: ArrayList<Records>,
                             list.removeAt(position)
                             selectedIndex = -1
                             notifyItemRemoved(position)
+                            fragment.resetPlayer()
                         }
                     }catch (e: Exception) {
                         Toast.makeText(context, R.string.message_delete_file_fail, Toast.LENGTH_SHORT).show()
@@ -111,6 +116,8 @@ class RecordAdapter(private val list: ArrayList<Records>,
     }
 
     fun popRenameAlert(record: Records, position: Int) {
+        fragment.stopPlayer()
+
         val builder = AlertDialog.Builder(context)
         val view = LayoutInflater.from(context).inflate(R.layout.dialog_layout, null)
         val save_name = view.findViewById<EditText>(R.id.save_name)

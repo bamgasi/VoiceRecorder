@@ -10,11 +10,9 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -22,10 +20,12 @@ import com.bamgasi.voicerecorder.R
 import com.bamgasi.voicerecorder.RecordAdapter
 import com.bamgasi.voicerecorder.model.Records
 import com.google.android.exoplayer2.ExoPlayerFactory
+import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.source.ExtractorMediaSource
 import com.google.android.exoplayer2.source.MediaSource
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
+import kotlinx.android.synthetic.main.custom_music_player.*
 import kotlinx.android.synthetic.main.fragment_list.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Dispatchers.Main
@@ -46,7 +46,6 @@ class ListFragment : Fragment() {
     private val mediaReceiver = MediaReceiver()
     private var curPlayUri: Uri? = null
 
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -56,7 +55,6 @@ class ListFragment : Fragment() {
         return root
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     suspend fun getRecordList() = withContext(Dispatchers.IO) {
         var recordList = arrayListOf<Records>()
         try {
@@ -68,7 +66,6 @@ class ListFragment : Fragment() {
         recordList
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -93,6 +90,20 @@ class ListFragment : Fragment() {
         }
 
         initializePlayer()
+
+        player?.addListener(object: Player.EventListener {
+            override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
+                if (playbackState == Player.STATE_ENDED) {
+                    /*player?.seekTo(0)
+                    player?.playWhenReady = false*/
+                }
+            }
+        })
+
+        btn_hide_player.setOnClickListener {
+            main_pcv.visibility = View.GONE
+            stopPlayer()
+        }
     }
 
     fun getFileName(orgName: String): String {
@@ -107,16 +118,6 @@ class ListFragment : Fragment() {
         return retValue
     }
 
-    /**
-     * duration 시간이 KST로 나와서 9시간을 뺀다.
-     */
-    fun convertUtcToLocal(longUtcTime: Long): Long {
-        val zone = TimeZone.getDefault()
-        val offset = zone.getOffset(longUtcTime)
-        val longLocalTime = longUtcTime - offset
-        return longLocalTime
-    }
-
     private fun startPlaying(uri: Uri?) {
         if (player != null) {
             //val uri = Uri.parse(filePath)
@@ -129,7 +130,21 @@ class ListFragment : Fragment() {
         }
     }
 
-    private fun initializePlayer() {
+    fun stopPlayer() {
+        if (player != null) {
+            if (player!!.isPlaying) player!!.setPlayWhenReady(false)
+        }
+    }
+
+    fun resetPlayer() {
+        if (player != null) {
+            player?.seekTo(0)
+            player?.playWhenReady = false
+            main_pcv.visibility = View.GONE
+        }
+    }
+
+    fun initializePlayer() {
         if (player == null) {
             player = ExoPlayerFactory.newSimpleInstance(requireContext())
 
@@ -280,10 +295,10 @@ class ListFragment : Fragment() {
 
                 val duration = convertDuration(durationLong)
 
-                Log.d(
+                /*Log.d(
                     "test",
                     "id: $id, display_name: $displayName, date_taken: $dateTaken, duration: $durationLong, content_uri: $contentUri\n"
-                )
+                )*/
 
                 fileList.add(Records(id, getFileName(displayName), duration, dateTaken, contentUri))
             }

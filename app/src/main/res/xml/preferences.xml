@@ -24,13 +24,38 @@
             android:dialogTitle="@string/pref_save_location_diglog_title"
             android:defaultValue="INTERNAL"
             app:iconSpaceReserved="false" />
+
     </PreferenceCategory>
 
-    <PreferenceScreen
-        android:title="@string/pref_app_version_title"
-        android:key="key_app_version"
-        android:summary="AppVersion"
+    <PreferenceCategory
+        android:title="@string/app_name"
         app:iconSpaceReserved="false">
-    </PreferenceScreen>
+
+        <PreferenceScreen
+            android:title="앱 리뷰(별점)"
+            android:key="key_app_review"
+            android:summary="리뷰와 별점은 개발자에게 많은 힘이됩니다."
+            app:iconSpaceReserved="false">
+            <intent android:action="android.intent.action.VIEW"
+                android:data="https://play.google.com/store/apps/details?id=com.bamgasi.voicerecorder"/>
+        </PreferenceScreen>
+
+        <PreferenceScreen
+            android:title="문의/건의하기"
+            android:key="key_app_email"
+            android:summary="수정 개선사항을 보내주세요."
+            app:iconSpaceReserved="false">
+            <intent android:action="android.intent.action.VIEW"
+                android:data="mailto:bamgasi@gmail.com"/>
+        </PreferenceScreen>
+
+        <PreferenceScreen
+            android:title="@string/pref_app_version_title"
+            android:key="key_app_version"
+            android:summary="AppVersion"
+            app:iconSpaceReserved="false">
+        </PreferenceScreen>
+
+    </PreferenceCategory>
 
 </PreferenceScreen>

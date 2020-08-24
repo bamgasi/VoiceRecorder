@@ -30,11 +30,9 @@ class SettingsFragment : PreferenceFragmentCompat() {
         saveLocation?.setOnPreferenceChangeListener { preference, newValue ->
             saveLocation.value = newValue.toString()
             preference?.summary = saveLocation.entry
-            AppConfig.setSaveDir()
+            //AppConfig.setSaveDir()
             true
         }
     }
-
-
 }
 
