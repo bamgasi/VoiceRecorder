@@ -11,17 +11,21 @@
 
     <string name="title_file_save">File Save</string>
     <string name="title_file_delete">File Delete</string>
-    <string name="message_file_delete">Are you sure you want to delete the file?</string>
+    <string name="title_file_rename">Rename</string>
+
     <string name="title_btn_save">Save</string>
     <string name="title_btn_delete">Delete</string>
     <string name="title_btn_cancel">Cancel</string>
+    <string name="title_btn_ok">OK</string>
     <string name="message_delete_file_fail">File deletion failed</string>
+    <string name="message_file_delete">Are you sure you want to delete the file?</string>
+    <string name="message_recording_cancel">Are you sure you want to cancel recording and delete the file?</string>
 
-    <string name="title_file_rename">Rename</string>
     <string name="msg_finish_alert">Press the back button again to finish.</string>
     <string name="msg_save_complete">The recorded file has been saved.</string>
     <string name="msg_not_save_state">"It is not currently recording. "</string>
     <string name="msg_record_stop">Recording has been stopped.</string>
+
 
     <string name="pref_title_config">Recording settings</string>
     <string name="pref_record_quality_title">Recording quality</string>
@@ -36,9 +40,10 @@
     <string name="pref_record_quality_normal">Normal Quality: 128kbps, 44kHz</string>
     <string name="pref_record_quality_low">Low Quality: 64kbps, 22kHz</string>
 
-    <string name="pref_app_version_title">AppVersion</string>
+    <string name="pref_app_version_title">App Version</string>
     <string name="pref_review_title">Write Review</string>
     <string name="pref_review_msg">Reviews and ratings are a lot of power for developers.</string>
     <string name="pref_send_email_title">Contact</string>
     <string name="pref_send_email_msg">Please send me fixes and improvements</string>
+
 </resources>

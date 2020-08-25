@@ -32,18 +32,18 @@
         app:iconSpaceReserved="false">
 
         <PreferenceScreen
-            android:title="앱 리뷰(별점)"
+            android:title="@string/pref_review_title"
             android:key="key_app_review"
-            android:summary="리뷰와 별점은 개발자에게 많은 힘이됩니다."
+            android:summary="@string/pref_review_msg"
             app:iconSpaceReserved="false">
             <intent android:action="android.intent.action.VIEW"
                 android:data="https://play.google.com/store/apps/details?id=com.bamgasi.voicerecorder"/>
         </PreferenceScreen>
 
         <PreferenceScreen
-            android:title="문의/건의하기"
+            android:title="@string/pref_send_email_title"
             android:key="key_app_email"
-            android:summary="수정 개선사항을 보내주세요."
+            android:summary="@string/pref_send_email_msg"
             app:iconSpaceReserved="false">
             <intent android:action="android.intent.action.VIEW"
                 android:data="mailto:bamgasi@gmail.com"/>

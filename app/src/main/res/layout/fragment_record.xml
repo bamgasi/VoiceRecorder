@@ -52,7 +52,7 @@
         android:id="@+id/btn_pause"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:layout_marginStart="24dp"
+        android:layout_marginStart="32dp"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:baselineAlignBottom="true"
         android:src="@drawable/ic_pause"
@@ -71,6 +71,26 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btn_record" />
+
+    <ImageView
+        android:id="@+id/btn_cancel"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginEnd="32dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@drawable/ic_clear"
+        app:layout_constraintBottom_toBottomOf="@+id/btn_record"
+        app:layout_constraintEnd_toStartOf="@+id/btn_record" />
+
+    <TextView
+        android:id="@+id/tv_recording_state"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_recoding_timer"
+        tools:text="녹음상태" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

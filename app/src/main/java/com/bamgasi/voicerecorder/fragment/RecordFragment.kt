@@ -13,6 +13,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
+import android.view.animation.TranslateAnimation
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.Toast
@@ -23,6 +24,9 @@ import androidx.lifecycle.lifecycleScope
 import com.bamgasi.voicerecorder.AppConfig
 import com.bamgasi.voicerecorder.R
 import com.bamgasi.voicerecorder.model.RecordingFile
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.MobileAds
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.fragment_record.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -71,10 +75,10 @@ class RecordFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        /*MobileAds.initialize(context) { }
+        MobileAds.initialize(context) { }
 
         val adRequest = AdRequest.Builder().build()
-        adView.loadAd(adRequest)*/
+        adView.loadAd(adRequest)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -95,8 +99,34 @@ class RecordFragment : Fragment() {
             pauseRecording()
             setButton()
         }
+
+        btn_cancel.setOnClickListener {
+            //pauseRecording()
+            popCancelAlert()
+        }
+
         //initMediaRecorder()
         setButton()
+    }
+
+    private fun popCancelAlert() {
+        val builder = AlertDialog.Builder(context)
+        builder.setTitle(R.string.title_btn_cancel)
+            .setMessage(R.string.message_recording_cancel)
+            .setPositiveButton(R.string.title_btn_ok) { p0, p1 ->
+                cancelRecording()
+
+                // 캐시 파일 삭제
+                val cacheFile = File(recordingFile.filePath)
+                cacheFile.delete()
+                setButton()
+                showNavView(true)
+            }
+            .setNegativeButton(R.string.title_btn_cancel) { p0, p1 ->
+
+            }
+        builder.create()
+        builder.show()
     }
 
     override fun onCreateView(
@@ -110,19 +140,30 @@ class RecordFragment : Fragment() {
     fun setButton() {
         if (state) {
             btn_pause.visibility = View.VISIBLE
+            btn_cancel.visibility = View.VISIBLE
             val anim = AnimationUtils.loadAnimation(context, R.anim.blink_animation);
             if (recordingStopped) {
                 btn_pause.apply {
                     startAnimation(anim)
                 }
+                tv_recording_state.apply {
+                    text = "일시중지"
+                    startAnimation(anim)
+                }
             }else{
                 btn_pause.clearAnimation()
+                tv_recording_state.apply {
+                    text = "녹음중..."
+                    clearAnimation()
+                }
             }
 
             btn_record.setImageResource(R.drawable.stop)
         } else {
+            tv_recording_state.text = ""
             btn_pause.clearAnimation()
             btn_pause.visibility = View.GONE
+            btn_cancel.visibility = View.GONE
             btn_record.setImageResource(R.drawable.record)
         }
     }
@@ -182,10 +223,31 @@ class RecordFragment : Fragment() {
             mediaRecorder?.start()
             state = true
             startTimer()
+            showNavView(false)
+
         } catch (e: IllegalStateException) {
             e.printStackTrace()
         } catch (e: IOException) {
             e.printStackTrace()
+        }
+    }
+
+    fun showNavView(show: Boolean) {
+        val navView: BottomNavigationView? = activity?.findViewById(R.id.nav_view)
+        if (navView != null) {
+            if (show) {
+                navView.visibility = View.VISIBLE
+                val animate = TranslateAnimation(0F, 0F, navView.height.toFloat(), 0F)
+                animate.duration = 500
+                animate.fillAfter = true
+                navView.startAnimation(animate)
+            }else{
+                navView.visibility = View.GONE
+                val animate = TranslateAnimation(0F, 0F, 0F, navView.height.toFloat())
+                animate.duration = 500
+                animate.fillAfter = true
+                navView.startAnimation(animate)
+            }
         }
     }
 
@@ -207,6 +269,23 @@ class RecordFragment : Fragment() {
             Toast.makeText(context, R.string.msg_save_complete, Toast.LENGTH_SHORT).show()
             setButton()
 
+        }else{
+            Toast.makeText(context, R.string.msg_not_save_state, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    fun cancelRecording() {
+        if (state) {
+            state = false
+            recordingStopped = false
+            mediaRecorder?.run {
+                stop()
+                reset()
+                release()
+            }
+            mediaRecorder = null
+            audioRecordView.recreate()
+            stopTimer()
         }else{
             Toast.makeText(context, R.string.msg_not_save_state, Toast.LENGTH_SHORT).show()
         }
@@ -242,20 +321,20 @@ class RecordFragment : Fragment() {
 
             val printTimer = String.format("%02d:%02d.%02d", min, sec, mili)
 
-            //withContext(Main)
-
             lifecycleScope.launch {
                 if (tv_recoding_timer != null) tv_recoding_timer.text = printTimer
-                if (audioRecordView != null) audioRecordView.update(mediaRecorder!!.maxAmplitude)
+                if (audioRecordView != null && mediaRecorder != null) audioRecordView.update(mediaRecorder!!.maxAmplitude)
             }
         }
     }
 
     fun stopTimer() {
         Log.e(TAG, "stopTimer()")
-        time = 0
         timerTask?.cancel()
-        tv_recoding_timer.text = "00:00.00"
+        tv_recoding_timer.postDelayed(Runnable {
+            time = 0
+            tv_recoding_timer.text = "00:00.00"
+        }, 100)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -285,6 +364,8 @@ class RecordFragment : Fragment() {
                 GlobalScope.launch(Dispatchers.Main) {
                     saveRecordingFile(fileName, recordingFile.filePath)
                 }
+
+                showNavView(true)
 
                 /*val sourceName = recordingFile.fileName+recordingFile.fileExt
                 val destName = save_name.text.toString() + recordingFile.fileExt
@@ -361,7 +442,6 @@ class RecordFragment : Fragment() {
                 val targetFile = File(file, fileName!!)
                 File(absoluteFile!!).copyTo(targetFile, true, DEFAULT_BUFFER_SIZE)
 
-                Log.e(TAG, "fileName: $fileName")
                 val values = ContentValues()
                 with(values) {
                     put(MediaStore.Audio.Media.TITLE, fileName)

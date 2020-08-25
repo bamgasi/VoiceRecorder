@@ -22,6 +22,8 @@ import java.io.File
 class MainActivity : AppCompatActivity() {
     private lateinit var navController: NavController
     private lateinit var appBarConfiguration: AppBarConfiguration
+    private val TAG: String = "MainActivity"
+    var currentSelectedMenuId = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,8 +40,6 @@ class MainActivity : AppCompatActivity() {
         navView.setupWithNavController(navController)
 
         checkPermission()
-
-
     }
 
     override fun onSupportNavigateUp(): Boolean {

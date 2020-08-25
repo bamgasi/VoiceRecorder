@@ -108,13 +108,11 @@ class ListFragment : Fragment() {
 
     fun getFileName(orgName: String): String {
         val pos = orgName.lastIndexOf(".")
-
         val retValue = if (pos < 0) {
             orgName
         }else{
             orgName.substring(0, pos)
         }
-
         return retValue
     }
 
@@ -124,8 +122,10 @@ class ListFragment : Fragment() {
             val mediaSource = buildMediaSource(uri!!)
 
             mediaSource?.let { player!!.prepare(it) }
-            player!!.seekTo(currentWindow, playbackPosition)
-            player!!.playWhenReady = playWhenReady
+            /*player!!.seekTo(currentWindow, playbackPosition)
+            player!!.playWhenReady = playWhenReady*/
+            player!!.seekTo(0)
+            player!!.playWhenReady = true
             main_pcv.visibility = View.VISIBLE
         }
     }
