@@ -37,4 +37,6 @@
     <string name="pref_send_email_msg">수정 개선사항을 보내주세요</string>
     <string name="title_btn_ok">확인</string>
     <string name="message_recording_cancel">녹음을 취소하고 파일을 삭제하시겠습니까?</string>
+    <string name="title_pause">일시정지</string>
+    <string name="title_recording">녹음중...</string>
 </resources>

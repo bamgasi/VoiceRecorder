@@ -17,6 +17,9 @@
     <string name="title_btn_delete">Delete</string>
     <string name="title_btn_cancel">Cancel</string>
     <string name="title_btn_ok">OK</string>
+    <string name="title_pause">Pause</string>
+    <string name="title_recording">Recording...</string>
+
     <string name="message_delete_file_fail">File deletion failed</string>
     <string name="message_file_delete">Are you sure you want to delete the file?</string>
     <string name="message_recording_cancel">Are you sure you want to cancel recording and delete the file?</string>

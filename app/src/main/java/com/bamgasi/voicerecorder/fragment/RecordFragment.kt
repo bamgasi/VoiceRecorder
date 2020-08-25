@@ -147,13 +147,14 @@ class RecordFragment : Fragment() {
                     startAnimation(anim)
                 }
                 tv_recording_state.apply {
-                    text = "일시중지"
+                    text = R.string.title_pause.toString()
                     startAnimation(anim)
                 }
             }else{
                 btn_pause.clearAnimation()
+
                 tv_recording_state.apply {
-                    text = "녹음중..."
+                    text = R.string.title_recording.toString()
                     clearAnimation()
                 }
             }
