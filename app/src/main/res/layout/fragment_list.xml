@@ -6,6 +6,18 @@
     android:layout_height="match_parent"
     tools:context=".fragment.ListFragment">
 
+    <com.google.android.gms.ads.AdView
+        android:id="@+id/adView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        app:adSize="SMART_BANNER"
+        app:adUnitId="@string/admob_ad_banner_id"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/record_recycler"
         android:layout_width="0dp"
@@ -13,7 +25,7 @@
         app:layout_constraintBottom_toTopOf="@+id/main_pcv"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/adView" />
 
     <com.google.android.exoplayer2.ui.PlayerControlView
         android:id="@+id/main_pcv"

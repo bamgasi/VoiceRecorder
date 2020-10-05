@@ -16,6 +16,7 @@
     <string name="title_btn_cancel">취소</string>
     <string name="message_delete_file_fail">파일삭제 실패</string>
     <string name="title_file_rename">이름변경</string>
+    <string name="title_file_share">파일공유</string>
     <string name="msg_finish_alert">뒤로가기 버튼을 한번 더 누르면 종료됩니다.</string>
     <string name="msg_save_complete">녹음파일이 저장되었습니다.</string>
     <string name="msg_not_save_state">현재 녹음중인 상태가 아닙니다.</string>

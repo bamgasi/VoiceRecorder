@@ -25,6 +25,8 @@ import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.source.ExtractorMediaSource
 import com.google.android.exoplayer2.source.MediaSource
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.MobileAds
 import kotlinx.android.synthetic.main.custom_music_player.*
 import kotlinx.android.synthetic.main.fragment_list.*
 import kotlinx.coroutines.Dispatchers
@@ -104,6 +106,11 @@ class ListFragment : Fragment() {
             main_pcv.visibility = View.GONE
             stopPlayer()
         }
+
+        MobileAds.initialize(context) { }
+
+        val adRequest = AdRequest.Builder().build()
+        adView.loadAd(adRequest)
     }
 
     fun getFileName(orgName: String): String {

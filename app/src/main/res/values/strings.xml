@@ -11,7 +11,8 @@
 
     <string name="title_file_save">File Save</string>
     <string name="title_file_delete">File Delete</string>
-    <string name="title_file_rename">Rename</string>
+    <string name="title_file_rename">File Rename</string>
+    <string name="title_file_share">File Share</string>
 
     <string name="title_btn_save">Save</string>
     <string name="title_btn_delete">Delete</string>
@@ -39,14 +40,20 @@
     <string name="pref_save_location_internal">Internal Storage</string>
     <string name="pref_save_location_sdcard">SD Card</string>
 
-    <string name="pref_record_quality_high">High Quality: 256kbps, 48kHz</string>
-    <string name="pref_record_quality_normal">Normal Quality: 128kbps, 44kHz</string>
-    <string name="pref_record_quality_low">Low Quality: 64kbps, 22kHz</string>
+    <string name="pref_record_quality_high">High: 256kbps, 48kHz</string>
+    <string name="pref_record_quality_normal">Normal: 128kbps, 44kHz</string>
+    <string name="pref_record_quality_low">Low: 64kbps, 22kHz</string>
 
     <string name="pref_app_version_title">App Version</string>
     <string name="pref_review_title">Write Review</string>
     <string name="pref_review_msg">Reviews and ratings are a lot of power for developers.</string>
     <string name="pref_send_email_title">Contact</string>
     <string name="pref_send_email_msg">Please send me fixes and improvements</string>
+
+    <!-- 테스트용 -->
+    <!--<string name="admob_ad_banner_id" translatable="false">ca-app-pub-3940256099942544/6300978111</string>-->
+
+    <!-- 라이브용 -->
+    <string name="admob_ad_banner_id" translatable="false">ca-app-pub-7647463159529818/6552747205</string>
 
 </resources>

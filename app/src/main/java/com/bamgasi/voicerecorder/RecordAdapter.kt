@@ -8,16 +8,20 @@ import android.content.Context.INPUT_METHOD_SERVICE
 import android.content.Intent
 import android.graphics.Color
 import android.provider.MediaStore
+import android.text.Editable
+import android.text.TextWatcher
+import android.view.Gravity
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.bamgasi.voicerecorder.databinding.RecordItemBinding
 import com.bamgasi.voicerecorder.fragment.ListFragment
 import com.bamgasi.voicerecorder.model.Records
+import kotlinx.android.synthetic.main.record_item.view.*
 
 class RecordAdapter(private val list: ArrayList<Records>,
                     val fragment: ListFragment,
@@ -54,85 +58,80 @@ class RecordAdapter(private val list: ArrayList<Records>,
     override fun onBindViewHolder(holder: RecordViewHolder, position: Int) {
         holder.binding.recording = list[position]
 
-        holder.binding.toolLayout.visibility = View.GONE
         holder.binding.nameText.setTextColor(Color.BLACK)
         holder.binding.recordItem.setBackgroundColor(android.R.color.background_light)
 
         val record = list[position]
 
         if (selectedIndex == position) {
-            holder.binding.toolLayout.visibility = View.VISIBLE
             holder.binding.nameText.setTextColor(Color.RED)
             holder.binding.recordItem.setBackgroundColor(Color.LTGRAY)
         }
 
-        holder.binding.btnShare.setOnClickListener {
-            /*
-            val shareFile = File(record.recordUri)
-            val contentUri: Uri = FileProvider.getUriForFile(
-                context,context.getPackageName() + ".fileprovider",
-                shareFile
-            )
-            val contentUri = record.recordUri
-            */
+        holder.itemView.iv_more.setOnClickListener {
+            val popupMenu = PopupMenu(context, it, Gravity.RIGHT)
+            popupMenu.menuInflater.inflate(R.menu.list_more_menu, popupMenu.menu)
+            popupMenu.setOnMenuItemClickListener { item ->
+                when(item.itemId) {
+                    R.id.id_rename_file -> {
+                        popRenameAlert(list[position], position)
+                    }
+                    R.id.id_share_file -> {
+                        fragment.stopPlayer()
 
-            fragment.stopPlayer()
+                        val shareIntent = Intent(Intent.ACTION_SEND)
+                        shareIntent.type = "audio/*"
+                        shareIntent.putExtra(Intent.EXTRA_STREAM, record.recordUri)
+                        context.startActivity(Intent.createChooser(shareIntent, record.recordName))
+                    }
+                    R.id.id_delete_file -> {
+                        fragment.stopPlayer()
 
-            val shareIntent = Intent(Intent.ACTION_SEND)
-            shareIntent.type = "audio/*"
-            shareIntent.putExtra(Intent.EXTRA_STREAM, record.recordUri)
-            context.startActivity(Intent.createChooser(shareIntent, record.recordName))
-        }
-
-        holder.binding.btnDelete.setOnClickListener {
-            //Log.e("MemoAdapter", "삭제버튼 눌림: ${list[position]}")
-
-            fragment.stopPlayer()
-
-            val builder = AlertDialog.Builder(context)
-            builder.setTitle(R.string.title_file_delete)
-                .setMessage(R.string.message_file_delete)
-                .setPositiveButton(R.string.title_btn_delete) { p0, p1 ->
-                    try {
-                        record.recordUri.let {
-                            context.contentResolver.delete(it, null, null)
-                            list.removeAt(position)
-                            selectedIndex = -1
-                            notifyItemRemoved(position)
-                            fragment.resetPlayer()
-                        }
-                    }catch (e: Exception) {
-                        Toast.makeText(context, R.string.message_delete_file_fail, Toast.LENGTH_SHORT).show()
+                        val builder = AlertDialog.Builder(context)
+                        builder.setTitle(R.string.title_file_delete)
+                            .setMessage(R.string.message_file_delete)
+                            .setPositiveButton(R.string.title_btn_delete) { p0, p1 ->
+                                try {
+                                    record.recordUri.let {
+                                        context.contentResolver.delete(it, null, null)
+                                        list.removeAt(position)
+                                        selectedIndex = -1
+                                        notifyItemRemoved(position)
+                                        fragment.resetPlayer()
+                                    }
+                                }catch (e: Exception) {
+                                    Toast.makeText(context, R.string.message_delete_file_fail, Toast.LENGTH_SHORT).show()
+                                }
+                            }
+                            .setNegativeButton(R.string.title_btn_cancel) { p0, p1 -> }
+                        builder.create()
+                        builder.show()
                     }
                 }
-                .setNegativeButton(R.string.title_btn_cancel) { p0, p1 -> }
-            builder.create()
-            builder.show()
-        }
-
-        holder.binding.btnRename.setOnClickListener {
-            popRenameAlert(list[position], position)
+                true
+            }
+            popupMenu.show()
         }
     }
 
-    fun popRenameAlert(record: Records, position: Int) {
+    private fun popRenameAlert(record: Records, position: Int) {
         fragment.stopPlayer()
 
         val builder = AlertDialog.Builder(context)
         val view = LayoutInflater.from(context).inflate(R.layout.dialog_layout, null)
-        val save_name = view.findViewById<EditText>(R.id.save_name)
+        val saveName = view.findViewById<EditText>(R.id.save_name)
 
         /**
          * 이름변경 시 키보드가 강제로 올라오게끔 한다.
          * 잘 동작하지 않아서 일부러 딜레이를 주었다.
          */
-        save_name.setText(record.recordName)
+        saveName.setText(record.recordName)
         val manager: InputMethodManager = context.getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-        save_name.postDelayed(Runnable {
+        saveName.postDelayed({
             kotlin.run {
-                save_name.setSelectAllOnFocus(true)
-                save_name.requestFocus()
-                manager.showSoftInput(save_name, 0)
+                saveName.setSelectAllOnFocus(true)
+                saveName.requestFocus()
+                manager.showSoftInput(saveName, 0)
             }
         }, 100)
 
@@ -140,7 +139,7 @@ class RecordAdapter(private val list: ArrayList<Records>,
             .setTitle(R.string.title_file_rename)
             .setPositiveButton(R.string.title_btn_save) { p0, p1 ->
                 val sourceName = record.recordName + AppConfig.FILE_EXT
-                val destName = save_name.text.toString() + AppConfig.FILE_EXT
+                val destName = saveName.text.toString() + AppConfig.FILE_EXT
                 if (sourceName != destName) {
                     // 이름변경의 경우 원본 파일은 그대로 두고 표시 이름만 변경하면 된다.
                     val values = ContentValues().apply {
@@ -148,21 +147,29 @@ class RecordAdapter(private val list: ArrayList<Records>,
                         put(MediaStore.Audio.Media.DISPLAY_NAME, destName)
                     }
 
-                    context?.contentResolver?.update(record.recordUri, values, null, null)
+                    context.contentResolver?.update(record.recordUri, values, null, null)
 
                     /*val sourceFile = File(saveDir, sourceName)
                     val destFile = File(saveDir, destName)
                     sourceFile.renameTo(destFile)*/
 
-                    record.recordName = save_name.text.toString()
+                    record.recordName = saveName.text.toString()
                     //record.recordUri = saveDir+destName
 
-                    list.set(position, record)
+                    list[position] = record
                     notifyItemChanged(position)
                 }
             }
             .setNegativeButton(R.string.title_btn_cancel) { p0, p1 -> }
-        builder.create()
-        builder.show()
+        val dialog = builder.create()
+        dialog.show()
+
+        saveName.addTextChangedListener(object: TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) {
+                dialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = !s.isNullOrEmpty()
+            }
+        })
     }
 }

@@ -8,6 +8,8 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -147,14 +149,14 @@ class RecordFragment : Fragment() {
                     startAnimation(anim)
                 }
                 tv_recording_state.apply {
-                    text = R.string.title_pause.toString()
+                    setText(R.string.title_pause)
                     startAnimation(anim)
                 }
             }else{
                 btn_pause.clearAnimation()
 
                 tv_recording_state.apply {
-                    text = R.string.title_recording.toString()
+                    setText(R.string.title_recording)
                     clearAnimation()
                 }
             }
@@ -292,6 +294,7 @@ class RecordFragment : Fragment() {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.N)
     fun pauseRecording() {
         Log.e(TAG, "pauseRecording()")
         if (state) {
@@ -305,6 +308,7 @@ class RecordFragment : Fragment() {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.N)
     private fun resumeRecording() {
         Log.e(TAG, "resumeRecording()")
         mediaRecorder?.resume()
@@ -342,15 +346,15 @@ class RecordFragment : Fragment() {
     fun popSaveAlert() {
         val builder = AlertDialog.Builder(activity)
         val view = LayoutInflater.from(context).inflate(R.layout.dialog_layout, null)
-        val save_name = view.findViewById<EditText>(R.id.save_name)
+        val saveName = view.findViewById<EditText>(R.id.save_name)
 
         val manager: InputMethodManager = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        save_name.setText(recordingFile.fileName)
-        save_name.postDelayed(Runnable {
+        saveName.setText(recordingFile.fileName)
+        saveName.postDelayed({
             kotlin.run {
-                save_name.setSelectAllOnFocus(true)
-                save_name.requestFocus()
-                manager.showSoftInput(save_name, 0)
+                saveName.setSelectAllOnFocus(true)
+                saveName.requestFocus()
+                manager.showSoftInput(saveName, 0)
             }
         }, 100)
 
@@ -360,7 +364,7 @@ class RecordFragment : Fragment() {
         builder.setView(view)
             .setTitle(R.string.title_file_save)
             .setPositiveButton(R.string.title_btn_save) { p0, p1 ->
-                val fileName = save_name.text.toString()+recordingFile.fileExt
+                val fileName = saveName.text.toString()+recordingFile.fileExt
                 stopRecording()
                 GlobalScope.launch(Dispatchers.Main) {
                     saveRecordingFile(fileName, recordingFile.filePath)
@@ -377,8 +381,16 @@ class RecordFragment : Fragment() {
                 }*/
             }
             .setNegativeButton(R.string.title_btn_cancel) { p0, p1 -> }
-        builder.create()
-        builder.show()
+        val dialog = builder.create()
+        dialog.show()
+
+        saveName.addTextChangedListener(object: TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) {
+                dialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = !s.isNullOrEmpty()
+            }
+        })
     }
 
     override fun onDestroyView() {
