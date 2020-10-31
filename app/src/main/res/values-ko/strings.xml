@@ -34,10 +34,13 @@
     <string name="pref_app_version_title">앱 버전</string>
     <string name="pref_review_title">앱 리뷰(별점주기)</string>
     <string name="pref_review_msg">리뷰와 별점은 개발자에게 많은 힘이됩니다.</string>
-    <string name="pref_send_email_title">문의 및 건의하기</string>
-    <string name="pref_send_email_msg">수정 개선사항을 보내주세요</string>
     <string name="title_btn_ok">확인</string>
     <string name="message_recording_cancel">녹음을 취소하고 파일을 삭제하시겠습니까?</string>
     <string name="title_pause">일시정지</string>
     <string name="title_recording">녹음중...</string>
+    <string name="title_recording_notification">녹음이 진행중입니다.</string>
+    <string name="pref_app_share">앱 공유하기</string>
+    <string name="pref_app_share_msg">가족이나 친지에게 앱을 공유해 주세요.</string>
+    <string name="pref_my_app">개발자의 다른앱</string>
+    <string name="pref_my_app_msg">코코랩에서 만든 다른 유용한 앱을 확인해보세요.</string>
 </resources>

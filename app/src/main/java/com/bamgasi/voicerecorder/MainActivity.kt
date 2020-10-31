@@ -41,6 +41,7 @@ class MainActivity : AppCompatActivity() {
         checkPermission()
     }
 
+
     override fun onSupportNavigateUp(): Boolean {
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }

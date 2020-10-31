@@ -1,16 +1,14 @@
 package com.bamgasi.voicerecorder.fragment
 
 import android.app.AlertDialog
-import android.content.ContentValues
-import android.content.Context
-import android.media.MediaRecorder
+import android.content.*
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
+import android.os.IBinder
 import android.provider.MediaStore
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -25,6 +23,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.bamgasi.voicerecorder.AppConfig
 import com.bamgasi.voicerecorder.R
+import com.bamgasi.voicerecorder.RecordingService
 import com.bamgasi.voicerecorder.model.RecordingFile
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.MobileAds
@@ -47,11 +46,32 @@ class RecordFragment : Fragment() {
     private var timerTask: Timer? = null
     private val TAG = "RecordFragment"
     private var recordingStopped: Boolean = false
-    private var mediaRecorder: MediaRecorder? = null
     private var state: Boolean = false
     private lateinit var recordingFile: RecordingFile
     private var FINISH_INTERVAL_TIME: Long = 2000
     private var backPressedTime: Long = 0
+    private val serviceClass = RecordingService::class.java
+
+    var recordingService: RecordingService? = null
+    var isService = false
+    private var mConnection: ServiceConnection? = null
+
+    private fun bindService() {
+        mConnection = object: ServiceConnection{
+            override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+                val binder = service as RecordingService.MyLocalBinder
+                recordingService = binder.getService()
+                isService = true
+            }
+
+            override fun onServiceDisconnected(name: ComponentName?) {
+                isService = false
+            }
+        }
+
+        val intent = Intent(requireActivity(), serviceClass)
+        requireActivity().bindService(intent, mConnection as ServiceConnection, Context.BIND_AUTO_CREATE)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -89,7 +109,6 @@ class RecordFragment : Fragment() {
 
         btn_record.setOnClickListener {
             if (!state) {
-                if (mediaRecorder == null) initMediaRecorder()
                 startRecording()
             }else{
                 popSaveAlert()
@@ -103,11 +122,9 @@ class RecordFragment : Fragment() {
         }
 
         btn_cancel.setOnClickListener {
-            //pauseRecording()
             popCancelAlert()
         }
 
-        //initMediaRecorder()
         setButton()
     }
 
@@ -139,7 +156,7 @@ class RecordFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_record, container, false)
     }
 
-    fun setButton() {
+    private fun setButton() {
         if (state) {
             btn_pause.visibility = View.VISIBLE
             btn_cancel.visibility = View.VISIBLE
@@ -171,63 +188,23 @@ class RecordFragment : Fragment() {
         }
     }
 
-    fun setRecordingFilename() {
-        /**
-         * 저장 디렉토리 지정
-         */
-        val saveDirString = AppConfig.getSaveDir()
-
+    private fun setRecordingFilename() {
         recordingFile = RecordingFile()
         recordingFile.fileName = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
         recordingFile.fileExt = ".mp3"
         recordingFile.filePath = context?.externalCacheDir?.absolutePath+"/"+recordingFile.fileName+recordingFile.fileExt
     }
 
-    fun initMediaRecorder() {
-        val recordQuality = AppConfig.getRecordQuality()
-        var asr = 0
-        var aebr = 0
-        when(recordQuality) {
-            "HIGH" -> {
-                asr = 48000
-                aebr = 256 * 1024
-            }
-            "NORMAL" -> {
-                asr = 44100
-                aebr = 128 * 1024
-            }
-            else -> {
-                asr = 22050
-                aebr = 64 * 1024
-            }
-        }
-
-        mediaRecorder = MediaRecorder()
-        mediaRecorder?.run {
-            setAudioSource(MediaRecorder.AudioSource.MIC)
-            setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
-            setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
-        }
-
-        mediaRecorder?.setAudioSamplingRate(asr)
-        mediaRecorder?.setAudioEncodingBitRate(aebr)
-
-    }
-
-    fun startRecording() {
-        //Log.e(TAG, "startRecording()")
-        if (mediaRecorder == null) initMediaRecorder()
-        setRecordingFilename()
-        //Log.e(TAG, "filePath: ${recordingFile.filePath}")
-        mediaRecorder?.setOutputFile(recordingFile.filePath)
+    private fun startRecording() {
+        var recordQuality = AppConfig.getRecordQuality()
 
         try {
-            mediaRecorder?.prepare()
-            mediaRecorder?.start()
+            setRecordingFilename()
+            if (!isService) bindService()
+            startService("START", recordingFile.filePath!!, recordQuality)
             state = true
             startTimer()
             showNavView(false)
-
         } catch (e: IllegalStateException) {
             e.printStackTrace()
         } catch (e: IOException) {
@@ -235,7 +212,7 @@ class RecordFragment : Fragment() {
         }
     }
 
-    fun showNavView(show: Boolean) {
+    private fun showNavView(show: Boolean) {
         val navView: BottomNavigationView? = activity?.findViewById(R.id.nav_view)
         if (navView != null) {
             if (show) {
@@ -254,20 +231,15 @@ class RecordFragment : Fragment() {
         }
     }
 
-    fun stopRecording() {
-        Log.e(TAG, "stopRecording()")
+    private fun stopRecording() {
+        //Log.e(TAG, "stopRecording()")
         if (state) {
             state = false
             recordingStopped = false
             audioRecordView.recreate()
             stopTimer()
 
-            mediaRecorder?.run {
-                stop()
-                reset()
-                release()
-            }
-            mediaRecorder = null
+            startService("STOP")
 
             Toast.makeText(context, R.string.msg_save_complete, Toast.LENGTH_SHORT).show()
             setButton()
@@ -277,16 +249,14 @@ class RecordFragment : Fragment() {
         }
     }
 
-    fun cancelRecording() {
+    private fun cancelRecording() {
         if (state) {
             state = false
             recordingStopped = false
-            mediaRecorder?.run {
-                stop()
-                reset()
-                release()
-            }
-            mediaRecorder = null
+
+            startService("STOP")
+            stopService()
+
             audioRecordView.recreate()
             stopTimer()
         }else{
@@ -296,10 +266,10 @@ class RecordFragment : Fragment() {
 
     @RequiresApi(Build.VERSION_CODES.N)
     fun pauseRecording() {
-        Log.e(TAG, "pauseRecording()")
+        //Log.e(TAG, "pauseRecording()")
         if (state) {
             if (!recordingStopped) {
-                mediaRecorder?.pause()
+                startService("PAUSE")
                 recordingStopped = true
                 timerTask?.cancel()
             } else {
@@ -310,14 +280,14 @@ class RecordFragment : Fragment() {
 
     @RequiresApi(Build.VERSION_CODES.N)
     private fun resumeRecording() {
-        Log.e(TAG, "resumeRecording()")
-        mediaRecorder?.resume()
+        //Log.e(TAG, "resumeRecording()")
+        startService("RESUME")
         recordingStopped = false
         startTimer()
     }
 
-    fun startTimer() {
-        Log.e(TAG, "startTimer()")
+    private fun startTimer() {
+        //Log.e(TAG, "startTimer()")
         timerTask = timer(period = 10) {
             time++
             val min = time / 100 / 60
@@ -328,13 +298,19 @@ class RecordFragment : Fragment() {
 
             lifecycleScope.launch {
                 if (tv_recoding_timer != null) tv_recoding_timer.text = printTimer
-                if (audioRecordView != null && mediaRecorder != null) audioRecordView.update(mediaRecorder!!.maxAmplitude)
+                //if (audioRecordView != null && mediaRecorder != null) audioRecordView.update(mediaRecorder!!.maxAmplitude)
+                if (audioRecordView != null) {
+                    val amplitude = recordingService?.getMaxAmplitude()
+                    if (amplitude != null) {
+                        audioRecordView.update(amplitude)
+                    }
+                }
             }
         }
     }
 
-    fun stopTimer() {
-        Log.e(TAG, "stopTimer()")
+    private fun stopTimer() {
+        //Log.e(TAG, "stopTimer()")
         timerTask?.cancel()
         tv_recoding_timer.postDelayed(Runnable {
             time = 0
@@ -371,14 +347,7 @@ class RecordFragment : Fragment() {
                 }
 
                 showNavView(true)
-
-                /*val sourceName = recordingFile.fileName+recordingFile.fileExt
-                val destName = save_name.text.toString() + recordingFile.fileExt
-                if (sourceName != destName) {
-                    val sourceFile = File(recordingFile.filePath, sourceName)
-                    val destFile = File(recordingFile.filePath, destName)
-                    sourceFile.renameTo(destFile)
-                }*/
+                stopService()
             }
             .setNegativeButton(R.string.title_btn_cancel) { p0, p1 -> }
         val dialog = builder.create()
@@ -393,13 +362,11 @@ class RecordFragment : Fragment() {
         })
     }
 
-    override fun onDestroyView() {
+    /*override fun onDestroyView() {
         super.onDestroyView()
         if (state) {
             state = false
             recordingStopped = false
-            //audioRecordView.recreate()
-            //stopTimer()
             Toast.makeText(context, R.string.msg_record_stop, Toast.LENGTH_SHORT).show()
             mediaRecorder?.run {
                 stop()
@@ -407,11 +374,10 @@ class RecordFragment : Fragment() {
                 release()
             }
             mediaRecorder = null
-            //setButton()
         }
-    }
+    }*/
 
-    suspend fun saveRecordingFile(fileName: String?, absoluteFile: String?) {
+    private suspend fun saveRecordingFile(fileName: String?, absoluteFile: String?) {
         val myFolder = "/KokoRecorder"
         val mimeType = "audio/*"
 
@@ -470,5 +436,30 @@ class RecordFragment : Fragment() {
                 cacheFile.delete()
             }
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        stopService()
+    }
+
+    private fun stopService() {
+        if (isService) {
+            mConnection?.let { requireActivity().unbindService(it) }
+            isService = false
+        }
+
+        val serviceIntent = Intent(requireContext(), serviceClass)
+        requireActivity().stopService(serviceIntent)
+    }
+
+    private fun startService(action: String, filePath: String = "", recordQuality: String = "") {
+        val intent = Intent(requireActivity(), serviceClass)
+        intent.putExtra("action", action)
+        if (action == "START") {
+            intent.putExtra("filePath", filePath)
+            intent.putExtra("recordQuality", recordQuality)
+        }
+        requireActivity().startService(intent)
     }
 }

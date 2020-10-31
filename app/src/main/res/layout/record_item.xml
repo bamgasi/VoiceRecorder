@@ -63,5 +63,26 @@
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_more_vert" />
 
+        <TextView
+            android:id="@+id/record_file_size"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_marginEnd="8dp"
+            android:text="@{recording.fileSize}"
+            app:layout_constraintBottom_toBottomOf="@+id/record_length_text"
+            app:layout_constraintEnd_toStartOf="@+id/record_date_text"
+            app:layout_constraintStart_toEndOf="@+id/textView2"
+            tools:text="128Kb" />
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:text="-"
+            app:layout_constraintBottom_toBottomOf="@+id/record_length_text"
+            app:layout_constraintStart_toEndOf="@+id/record_length_text" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

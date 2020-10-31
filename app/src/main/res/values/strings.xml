@@ -20,6 +20,7 @@
     <string name="title_btn_ok">OK</string>
     <string name="title_pause">Pause</string>
     <string name="title_recording">Recording...</string>
+    <string name="title_recording_notification">Recording is in progress.</string>
 
     <string name="message_delete_file_fail">File deletion failed</string>
     <string name="message_file_delete">Are you sure you want to delete the file?</string>
@@ -47,8 +48,10 @@
     <string name="pref_app_version_title">App Version</string>
     <string name="pref_review_title">Write Review</string>
     <string name="pref_review_msg">Reviews and ratings are a lot of power for developers.</string>
-    <string name="pref_send_email_title">Contact</string>
-    <string name="pref_send_email_msg">Please send me fixes and improvements</string>
+    <string name="pref_app_share">Share App</string>
+    <string name="pref_app_share_msg">Share the app with family or friends</string>
+    <string name="pref_my_app">Recommended App</string>
+    <string name="pref_my_app_msg">Check out other useful apps made by Coco Lab.</string>
 
     <!-- 테스트용 -->
     <!--<string name="admob_ad_banner_id" translatable="false">ca-app-pub-3940256099942544/6300978111</string>-->

@@ -34,6 +34,7 @@ import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -57,7 +58,7 @@ class ListFragment : Fragment() {
         return root
     }
 
-    suspend fun getRecordList() = withContext(Dispatchers.IO) {
+    private suspend fun getRecordList() = withContext(Dispatchers.IO) {
         var recordList = arrayListOf<Records>()
         try {
             recordList = getFileList(requireContext()) as ArrayList<Records>
@@ -232,7 +233,7 @@ class ListFragment : Fragment() {
         }
     }
 
-    fun getFileList(context: Context): List<Records> {
+    private fun getFileList(context: Context): List<Records> {
         val myFolder = arrayOf("%KokoRecorder%")
 
         /**
@@ -307,7 +308,7 @@ class ListFragment : Fragment() {
                     "id: $id, display_name: $displayName, date_taken: $dateTaken, duration: $durationLong, content_uri: $contentUri\n"
                 )*/
 
-                fileList.add(Records(id, getFileName(displayName), duration, dateTaken, contentUri))
+                fileList.add(Records(id, getFileName(displayName), duration, dateTaken, contentUri, getFileSize(dataName)))
             }
         }
 
@@ -316,8 +317,26 @@ class ListFragment : Fragment() {
         return fileList
     }
 
-    fun getDuration(filePath: String): Long {
-        //Log.e(TAG, "filePath: $filePath")
+    private fun getFileSize(filePath: String): String {
+        var fileSize = ""
+
+        try {
+            val file = File(filePath)
+
+            fileSize = if (file.sizeInKb > 1000) {
+                file.sizeStrWithMb(2)
+            }else{
+                file.sizeStrWithKb(2)
+            }
+            //Log.e(TAG, "filePath: $filePath, fileSize: $fileSize")
+
+        }catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return fileSize
+    }
+
+    private fun getDuration(filePath: String): Long {
         val mediaMetadataRetriever = MediaMetadataRetriever()
         var milisec = 0L
 
@@ -333,7 +352,7 @@ class ListFragment : Fragment() {
         return milisec
     }
 
-    fun convertDuration(duration: Long): String {
+    private fun convertDuration(duration: Long): String {
         //Log.e(TAG, "duration: $duration")
         val hour = TimeUnit.MILLISECONDS.toHours(duration)
         val minutes = TimeUnit.MILLISECONDS.toMinutes(duration) -
@@ -347,4 +366,20 @@ class ListFragment : Fragment() {
             String.format("%02d:%02d", minutes, second)
         }
     }
+
+    val File.size get() = if (!exists()) 0.0 else length().toDouble()
+    val File.sizeInKb get() = size / 1024
+    val File.sizeInMb get() = sizeInKb / 1024
+    val File.sizeInGb get() = sizeInMb / 1024
+    val File.sizeInTb get() = sizeInGb / 1024
+
+    fun File.sizeStr(): String = size.toString()
+    fun File.sizeStrInKb(decimals: Int = 0): String = "%.${decimals}f".format(sizeInKb)
+    fun File.sizeStrInMb(decimals: Int = 0): String = "%.${decimals}f".format(sizeInMb)
+    fun File.sizeStrInGb(decimals: Int = 0): String = "%.${decimals}f".format(sizeInGb)
+
+    fun File.sizeStrWithBytes(): String = sizeStr() + "B"
+    fun File.sizeStrWithKb(decimals: Int = 0): String = sizeStrInKb(decimals) + "KB"
+    fun File.sizeStrWithMb(decimals: Int = 0): String = sizeStrInMb(decimals) + "MB"
+    fun File.sizeStrWithGb(decimals: Int = 0): String = sizeStrInGb(decimals) + "GB"
 }
