@@ -30,6 +30,7 @@ class RecordAdapter(private val list: ArrayList<Records>,
     RecyclerView.Adapter<RecordAdapter.RecordViewHolder>() {
 
     var selectedIndex = -1
+    private val TAG = "RecordAdapter"
 
     class RecordViewHolder(val binding: RecordItemBinding): RecyclerView.ViewHolder(binding.root)
 
@@ -87,9 +88,11 @@ class RecordAdapter(private val list: ArrayList<Records>,
                     R.id.id_delete_file -> {
                         fragment.stopPlayer()
 
+                        val messageDelete = "File: ${record.recordName}\n"+context.resources.getString(R.string.message_file_delete)
+
                         val builder = AlertDialog.Builder(context)
                         builder.setTitle(R.string.title_file_delete)
-                            .setMessage(R.string.message_file_delete)
+                            .setMessage(messageDelete)
                             .setPositiveButton(R.string.title_btn_delete) { p0, p1 ->
                                 try {
                                     record.recordUri.let {
@@ -97,6 +100,7 @@ class RecordAdapter(private val list: ArrayList<Records>,
                                         list.removeAt(position)
                                         selectedIndex = -1
                                         notifyItemRemoved(position)
+                                        notifyItemRangeChanged(position, list.size)
                                         fragment.resetPlayer()
                                     }
                                 }catch (e: Exception) {
@@ -149,12 +153,7 @@ class RecordAdapter(private val list: ArrayList<Records>,
 
                     context.contentResolver?.update(record.recordUri, values, null, null)
 
-                    /*val sourceFile = File(saveDir, sourceName)
-                    val destFile = File(saveDir, destName)
-                    sourceFile.renameTo(destFile)*/
-
                     record.recordName = saveName.text.toString()
-                    //record.recordUri = saveDir+destName
 
                     list[position] = record
                     notifyItemChanged(position)
